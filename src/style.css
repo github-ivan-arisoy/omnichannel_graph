@@ -1,0 +1,401 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #06172C;
+  /* background: #1a1a1a; */
+  color: white;
+}
+
+/* Container styles */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* Navigation styles */
+.nav-container {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background: #212540;
+  /* background: #252525; */
+  border-bottom: 1px solid #333;
+  height: 48px;
+}
+
+.nav-brand {
+  font-weight: 600;
+  margin-right: 32px;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 16px;
+}
+
+.nav-tab {
+  background: none;
+  border: none;
+  color: #666;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.nav-tab:hover {
+  color: #fff;
+}
+
+.nav-tab.active {
+  color: #fff;
+}
+
+.play-button {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+}
+
+/* Content layout */
+.content-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Sidebar styles */
+.sidebar {
+  width: 320px;
+  background: #212540;
+  /* background: #252525; */
+  padding: 16px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.histogram-container {
+  margin-bottom: 24px;
+}
+
+.histogram-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+/* Graph container */
+.graph-container {
+  flex: 1;
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  background: #1a1a1a;
+}
+
+/* Stats display */
+.stats-container {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: #252525;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* Cosmograph specific styles */
+:root {
+  --cosmograph-histogram-bar-color: #4a4a4a;
+  --cosmograph-histogram-background: transparent;
+  --cosmograph-histogram-backgorund:  #212540;
+  --cosmograph-histogram-text-color: #a0a0a0;
+  --cosmograph-histogram-selection-color: #666666;
+  --cosmograph-histogram-selection-opacity: 0.3;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}
+
+
+/* Info container styles */
+.info-container {
+  padding: 16px;
+  color: white;
+  overflow-y: auto;
+}
+
+.info-container h2 {
+  margin-bottom: 16px;
+}
+
+.info-container ul {
+  list-style: none;
+  padding: 0;
+}
+
+.info-container li {
+  margin-bottom: 8px;
+}
+
+.info-container strong {
+  font-weight: 600;
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background: var(--menu-bg-color);
+  border-bottom: 1px solid #333;
+  height: auto;
+  flex-wrap: wrap;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 16px;
+}
+
+.nav-node-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.nav-node-info-item {
+  font-size: 14px;
+  color: white;
+}
+
+/* Optional: make nav-node-info scrollable if content is long */
+.nav-node-info {
+  max-height: 100px; /* Adjust as needed */
+  overflow-y: auto;
+}
+
+.node-info {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(34, 34, 34, 0.8);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+
+.info-container {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.info-title {
+  color: white;
+  font-size: 16px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.info-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-content p {
+  color: #e0e0e0;
+  font-size: 14px;
+  margin: 0;
+}
+
+
+.timeline-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  margin: 20px;
+  border-radius: 8px;
+}
+
+/* Adjust content-container to make room for timeline */
+.content-container {
+  position: relative;
+  padding-bottom: 100px;
+}
+
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.search-input {
+  width: 250px;
+  height: 32px;
+  border-radius: 6px;
+  background-color: var(--cosmograph-search-input-background);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Optional: Customize search component colors */
+:root {
+  --cosmograph-search-text-color: white;
+   /*--cosmograph-search-list-background: #1a1a1a;*/
+  --cosmograph-search-input-background: rgba(255, 255, 255, 0.05);
+  --cosmograph-search-mark-background: rgba(255, 255, 255, 0.1);
+  --cosmograph-search-accessor-background: rgba(255, 255, 255, 0.1);
+  --cosmograph-search-interactive-background: rgba(255, 255, 255, 0.2);
+  --cosmograph-search-hover-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Adjust nav-container to accommodate search */
+.nav-container {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background: #131731;
+  color: white;
+}
+
+/* Adjust play button spacing */
+.play-button {
+  margin-left: 8px;
+}
+
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  margin-right: 32px;
+  color: white;
+}
+
+.logo-svg {
+  color: white;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  height: 32px; /* Fixed height to align items */
+}
+
+.search-input {
+  width: 250px;
+  height: 32px;
+  border-radius: 6px;
+  background-color: var(--cosmograph-search-input-background);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+}
+
+/* Adjust the search input internals */
+:root {
+  --cosmograph-search-input-background: rgba(255, 255, 255, 0.07);
+}
+
+/* Override any internal search padding */
+.search-input > div {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.play-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  width: 32px;
+  margin-left: 8px;
+  border-radius: 6px;
+  background: var(--cosmograph-search-input-background);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background-color 0.2s;
+}
+
+.play-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.legend-container {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  background: rgba(33, 37, 64, 0.8);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-width: 120px;
+}
+
+.legend-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: white;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.legend-item span {
+  font-size: 12px;
+  color: white;
+}
