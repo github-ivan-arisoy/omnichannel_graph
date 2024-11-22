@@ -57,7 +57,7 @@ function MainPage() {
 
   const [loading, setLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [currentView, setCurrentView] = useState<'general' | 'info' | 'analysis'>('analysis');
+  const [currentView, setCurrentView] = useState<'general' | 'info' | 'statistics'>('general');
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [isTimelineAnimating, setIsTimelineAnimating] = useState(false);
   const [showLabelsFor, setShowLabelsFor] = useState<Node[] | undefined>(undefined);
@@ -276,184 +276,183 @@ function MainPage() {
 
   return (
     <CosmographProvider nodes={graphData.nodes} links={graphData.links}>
-      <div className="app-container">
-        {/* Top Navigation */}
-        <div className="nav-container">
-          <div className="nav-brand">
-            <TeadsLogo /> 
-          </div>
-          <div className="nav-tabs">
-          <button
-            className={`nav-tab ${currentView === 'general' ? 'active' : ''}`}
-            onClick={() => setCurrentView('general')}
-          >
-            General
-          </button>
-          <button
-            className={`nav-tab ${currentView === 'info' ? 'active' : ''}`}
-            onClick={() => setCurrentView('info')}
-          >
-            Info
-          </button>
-          <button
-              className={`nav-tab ${currentView === 'analysis' ? 'active' : ''}`}
-              onClick={handleAnalysisClick}
-              disabled={selectedHouseholds.length === 0}
-            >
-              Analysis
-          </button>
-          <SelectedHouseholds
-            selectedHouseholds={selectedHouseholds}
-            onRemove={(household) => {
-              setSelectedHouseholds(prev => prev.filter(h => h.id !== household.id));
-            }}
-            graphData={graphData}
-            deviceColors={deviceColors}  // Add this line
-          />
-        </div>
-          <div className="nav-actions">
-            <CosmographSearch<Node, Link>
-              ref={searchRef}
-              className="search-input"
-              accessors={[
-                { label: 'ID', accessor: (node) => node.id },
-                { label: 'Environment', accessor: (node) => node.env || '' },
-                { label: 'IP Hash', accessor: (node) => node.ip_hash || '' },
-                { label: 'Browser', accessor: (node) => node.browsers || '' },
-                { label: 'Node type', accessor: (node) => node.node_type || '' },
-                { label: 'City', accessor: (node) => node.cities || '' }
-              ]}
-              maxVisibleItems={5}
-              placeholder="Search nodes..."
-              onSelectResult={handleSearchSelect}
-            />
-            <button className="play-button" onClick={handlePlayPause}>
-              {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-            </button>
-          </div>
-        </div>
+  <div className="app-container">
+    {/* Top Navigation */}
+    <div className="nav-container">
+      <div className="nav-brand">
+        <TeadsLogo /> 
+      </div>
+      <div className="nav-tabs">
+        <button
+          className={`nav-tab ${currentView === 'general' ? 'active' : ''}`}
+          onClick={() => setCurrentView('general')}
+        >
+          General
+        </button>
+        <button
+          className={`nav-tab ${currentView === 'info' ? 'active' : ''}`}
+          onClick={() => setCurrentView('info')}
+        >
+          Info
+        </button>
+        <button
+          className={`nav-tab ${currentView === 'statistics' ? 'active' : ''}`}
+          onClick={() => setCurrentView('statistics')}
+        >
+          Statistics
+        </button>
+        <SelectedHouseholds
+          selectedHouseholds={selectedHouseholds}
+          onRemove={(household) => {
+            setSelectedHouseholds(prev => prev.filter(h => h.id !== household.id));
+          }}
+          graphData={graphData}
+          deviceColors={deviceColors}
+        />
+      </div>
+      <div className="nav-actions">
+        <CosmographSearch<Node, Link>
+          ref={searchRef}
+          className="search-input"
+          accessors={[
+            { label: 'ID', accessor: (node) => node.id },
+            { label: 'Environment', accessor: (node) => node.env || '' },
+            { label: 'IP Hash', accessor: (node) => node.ip_hash || '' },
+            { label: 'Browser', accessor: (node) => node.browsers || '' },
+            { label: 'Node type', accessor: (node) => node.node_type || '' },
+            { label: 'City', accessor: (node) => node.cities || '' }
+          ]}
+          maxVisibleItems={5}
+          placeholder="Search nodes..."
+          onSelectResult={handleSearchSelect}
+        />
+        <button className="play-button" onClick={handlePlayPause}>
+          {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+        </button>
+      </div>
+    </div>
 
-        {/* Main Content */}
-        <div className="content-container">
-          {/* Sidebar */}
-          {(currentView === 'general' || currentView === 'info' || currentView === 'analysis') && (
-            <div className="sidebar">
-              {/* General Tab Sidebar */}
-              {currentView === 'general' && (
-                <div className="general-sidebar">
-                  <h3 className="sidebar-title">Select Dataset</h3>
-                  <div className="dataset-menu">
-                    {Object.entries(datasets).map(([key, dataset]) => (
-                      <button
-                        key={key}
-                        className={`dataset-button ${currentDataset === key ? 'active' : ''}`}
-                        onClick={() => setCurrentDataset(key)}
-                      >
-                        {dataset.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Node Info Section */}
-              {currentView === 'info' && selectedNode && (
-                <div className="info-container">
-                  <h3 className="info-title">Node Information</h3>
-                  <div className="info-content">
-                    <p>ID: {selectedNode.id}</p>
-                    <p>Environment: {selectedNode.env}</p>
-                    <p>IP Hash: {selectedNode.ip_hash}</p>
-                    <p>Browser: {selectedNode.browsers}</p>
-                    <p>Node type: {selectedNode.node_type}</p>
-                    <p>Cities: {selectedNode.cities}</p>
-                    <p>std Name: {selectedNode.standardised_name}</p>
-                    <p>Incoming Links: {selectedNode.inLinksCount}</p>
-                    <p>Outgoing Links: {selectedNode.outLinksCount}</p>
-                    {/* Clear Selection Button */}
-                    <button onClick={clearSelection}>Clear Selection</button>
-                  </div>
-                </div>
-              )}
-
-              {/* Histograms */}
-              {currentView === 'analysis' && (
-                <>
-                  {/* Households Histograms */}
-                  <h2 onClick={() => setIsHouseholdsOpen(!isHouseholdsOpen)} className="collapsible-header">
-                    Households {isHouseholdsOpen ? '▲' : '▼'}
-                  </h2>
-                  {isHouseholdsOpen && (
-                    <>
-                      {/* Histogram for household_nb_of_users */}
-                      <div className="histogram-container">
-                        <h3 className="histogram-title">Number of Users by Household</h3>
-                        <CosmographHistogram<Node>
-                          accessor={(node) => Math.max(node.household_nb_of_users || 0, 0)}
-                        />
-                      </div>
-
-                      {/* Histogram for household_nb_of_vids */}
-                      <div className="histogram-container">
-                        <h3 className="histogram-title">Number of VIDs by Household</h3>
-                        <CosmographHistogram<Node>
-                          accessor={(node) => Math.max(node.household_nb_of_vids || 0, 0)}
-                        />
-                      </div>
-                    </>
-                  )}
-
-                  {/* Users Histograms */}
-                  <h2 onClick={() => setIsUsersOpen(!isUsersOpen)} className="collapsible-header">
-                    Users {isUsersOpen ? '▲' : '▼'}
-                  </h2>
-                  {isUsersOpen && (
-                    <>
-                      {/* Histogram for user_nb_of_households */}
-                      <div className="histogram-container">
-                        <h3 className="histogram-title">Number of Households by User</h3>
-                        <CosmographHistogram<Node>
-                          accessor={(node) => Math.max(node.user_nb_of_households || 0, 0)}
-                        />
-                      </div>
-
-                      {/* Histogram for user_nb_of_vids */}
-                      <div className="histogram-container">
-                        <h3 className="histogram-title">Number of VIDs by User</h3>
-                        <CosmographHistogram<Node>
-                          accessor={(node) => Math.max(node.user_nb_of_vids || 0, 0)}
-                        />
-                      </div>
-                    </>
-                  )}
-
-                  {/* VIDs Histograms */}
-                  <h2 onClick={() => setIsVIDsOpen(!isVIDsOpen)} className="collapsible-header">
-                    VIDs {isVIDsOpen ? '▲' : '▼'}
-                  </h2>
-                  {isVIDsOpen && (
-                    <>
-                      {/* Histogram for vid_nb_of_users */}
-                      <div className="histogram-container">
-                        <h3 className="histogram-title">Number of Users by VID</h3>
-                        <CosmographHistogram<Node>
-                          accessor={(node) => Math.max(node.vid_nb_of_users || 0, 0)}
-                        />
-                      </div>
-
-                      {/* Histogram for vid_nb_of_households */}
-                      <div className="histogram-container">
-                        <h3 className="histogram-title">Number of Households by VID</h3>
-                        <CosmographHistogram<Node>
-                          accessor={(node) => Math.max(node.vid_nb_of_households || 0, 0)}
-                        />
-                      </div>
-                    </>
-                  )}
-                </>
-              )}
+    {/* Main Content */}
+    <div className="content-container">
+      {/* Sidebar */}
+      {(currentView === 'general' || currentView === 'info' || currentView === 'statistics') && (
+        <div className="sidebar">
+          {/* General Tab Sidebar */}
+          {currentView === 'general' && (
+            <div className="general-sidebar">
+              <h3 className="sidebar-title">Select Dataset</h3>
+              <div className="dataset-menu">
+                {Object.entries(datasets).map(([key, dataset]) => (
+                  <button
+                    key={key}
+                    className={`dataset-button ${currentDataset === key ? 'active' : ''}`}
+                    onClick={() => setCurrentDataset(key)}
+                  >
+                    {dataset.name}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
+
+          {/* Node Info Section */}
+          {currentView === 'info' && selectedNode && (
+            <div className="info-container">
+              <h3 className="info-title">Node Information</h3>
+              <div className="info-content">
+                <p>ID: {selectedNode.id}</p>
+                <p>Environment: {selectedNode.env}</p>
+                <p>IP Hash: {selectedNode.ip_hash}</p>
+                <p>Browser: {selectedNode.browsers}</p>
+                <p>Node type: {selectedNode.node_type}</p>
+                <p>Cities: {selectedNode.cities}</p>
+                <p>std Name: {selectedNode.standardised_name}</p>
+                <p>Incoming Links: {selectedNode.inLinksCount}</p>
+                <p>Outgoing Links: {selectedNode.outLinksCount}</p>
+                {/* Clear Selection Button */}
+                <button onClick={clearSelection}>Clear Selection</button>
+              </div>
+            </div>
+          )}
+
+          {/* Histograms */}
+          {currentView === 'statistics' && (
+            <>
+              {/* Households Histograms */}
+              <h2 onClick={() => setIsHouseholdsOpen(!isHouseholdsOpen)} className="collapsible-header">
+                Households {isHouseholdsOpen ? '▲' : '▼'}
+              </h2>
+              {isHouseholdsOpen && (
+                <>
+                  {/* Histogram for household_nb_of_users */}
+                  <div className="histogram-container">
+                    <h3 className="histogram-title">Number of Users by Household</h3>
+                    <CosmographHistogram<Node>
+                      accessor={(node) => Math.max(node.household_nb_of_users || 0, 0)}
+                    />
+                  </div>
+
+                  {/* Histogram for household_nb_of_vids */}
+                  <div className="histogram-container">
+                    <h3 className="histogram-title">Number of VIDs by Household</h3>
+                    <CosmographHistogram<Node>
+                      accessor={(node) => Math.max(node.household_nb_of_vids || 0, 0)}
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* Users Histograms */}
+              <h2 onClick={() => setIsUsersOpen(!isUsersOpen)} className="collapsible-header">
+                Users {isUsersOpen ? '▲' : '▼'}
+              </h2>
+              {isUsersOpen && (
+                <>
+                  {/* Histogram for user_nb_of_households */}
+                  <div className="histogram-container">
+                    <h3 className="histogram-title">Number of Households by User</h3>
+                    <CosmographHistogram<Node>
+                      accessor={(node) => Math.max(node.user_nb_of_households || 0, 0)}
+                    />
+                  </div>
+
+                  {/* Histogram for user_nb_of_vids */}
+                  <div className="histogram-container">
+                    <h3 className="histogram-title">Number of VIDs by User</h3>
+                    <CosmographHistogram<Node>
+                      accessor={(node) => Math.max(node.user_nb_of_vids || 0, 0)}
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* VIDs Histograms */}
+              <h2 onClick={() => setIsVIDsOpen(!isVIDsOpen)} className="collapsible-header">
+                VIDs {isVIDsOpen ? '▲' : '▼'}
+              </h2>
+              {isVIDsOpen && (
+                <>
+                  {/* Histogram for vid_nb_of_users */}
+                  <div className="histogram-container">
+                    <h3 className="histogram-title">Number of Users by VID</h3>
+                    <CosmographHistogram<Node>
+                      accessor={(node) => Math.max(node.vid_nb_of_users || 0, 0)}
+                    />
+                  </div>
+
+                  {/* Histogram for vid_nb_of_households */}
+                  <div className="histogram-container">
+                    <h3 className="histogram-title">Number of Households by VID</h3>
+                    <CosmographHistogram<Node>
+                      accessor={(node) => Math.max(node.vid_nb_of_households || 0, 0)}
+                    />
+                  </div>
+                </>
+              )}
+            </>
+          )}
+        </div>
+      )}
 
           {/* Graph Area */}
           <div className="graph-container">

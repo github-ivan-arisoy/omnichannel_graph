@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { useNavigate } from 'react-router-dom';
 import { Node, Link } from './data';
 
@@ -6,14 +6,57 @@ interface SelectedHouseholdsProps {
   selectedHouseholds: Node[];
   onRemove: (household: Node) => void;
   graphData: { nodes: Node[]; links: Link[] };
-  deviceColors: Record<string, string>;  // Add this line
+  deviceColors: Record<string, string>;
 }
+
+// Add the network traversal function
+const getCompleteNetwork = (
+  selectedHouseholds: Node[],
+  allNodes: Node[],
+  allLinks: Link[]
+): { nodes: Node[]; links: Link[] } => {
+  const includedNodeIds = new Set<string>();
+  const includedLinks = new Set<Link>();
+  
+  selectedHouseholds.forEach(h => includedNodeIds.add(h.id));
+
+  const exploreConnections = (nodeId: string) => {
+    allLinks.forEach(link => {
+      if (link.source === nodeId || link.target === nodeId) {
+        const otherNodeId = link.source === nodeId ? link.target : link.source;
+        const otherNode = allNodes.find(n => n.id === otherNodeId);
+        
+        if (!otherNode) return;
+
+        includedLinks.add(link);
+
+        if (!includedNodeIds.has(otherNodeId)) {
+          includedNodeIds.add(otherNodeId);
+
+          if (otherNode.node_type.startsWith('User:') || 
+              (otherNode.node_type !== 'Household' && otherNode.node_type !== 'User: LiverampID')) {
+            exploreConnections(otherNodeId);
+          }
+        }
+      }
+    });
+  };
+
+  selectedHouseholds.forEach(household => {
+    exploreConnections(household.id);
+  });
+
+  const nodes = allNodes.filter(node => includedNodeIds.has(node.id));
+  const links = Array.from(includedLinks);
+
+  return { nodes, links };
+};
 
 export function SelectedHouseholds({ 
   selectedHouseholds, 
   onRemove,
   graphData,
-  deviceColors  // Add this parameter
+  deviceColors
 }: SelectedHouseholdsProps) {
   const navigate = useNavigate();
 
@@ -21,27 +64,18 @@ export function SelectedHouseholds({
   if (!graphData) return null;
 
   const handleAnalyze = () => {
-    const householdIds = new Set(selectedHouseholds.map(h => h.id));
-    const relevantLinks = graphData.links.filter(link => 
-      householdIds.has(link.source) || householdIds.has(link.target)
+    const { nodes: relatedNodes, links } = getCompleteNetwork(
+      selectedHouseholds,
+      graphData.nodes,
+      graphData.links
     );
-    
-    const connectedNodeIds = new Set([
-      ...relevantLinks.map(l => l.source),
-      ...relevantLinks.map(l => l.target)
-    ]);
-    
-    const relatedNodes = graphData.nodes.filter(
-      node => !householdIds.has(node.id) && connectedNodeIds.has(node.id)
-    );
-  
-    // Pass deviceColors along with other state
+
     navigate('/analysis', {
       state: {
         selectedHouseholds,
         relatedNodes,
-        links: relevantLinks,
-        deviceColors // Pass the current deviceColors
+        links,
+        deviceColors
       }
     });
   };
@@ -64,6 +98,7 @@ export function SelectedHouseholds({
       <button 
         onClick={handleAnalyze}
         className="analyze-button"
+        disabled={selectedHouseholds.length === 0}
       >
         Analyze
       </button>
