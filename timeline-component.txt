@@ -1,0 +1,182 @@
+Timeline
+The CosmographTimeline provides a timeline component that allows you to visualize your data over time. Additionally, it offers methods for controlling the animation of selected range data over time.
+
+Creating a timeline Instance
+info
+Note that in order to use the CosmographTimeline component in React, you will need to have a higher-order CosmographProvider in your component tree, and Cosmograph component initialized. CosmographProvider is responsible for providing data into all Cosmograph React Components and interaction with Cosmograph instance.
+
+React
+Data
+import { CosmographProvider, Cosmograph, CosmographTimeline } from '@cosmograph/react'
+import { nodes, links } from './path/to/data'
+
+export const Component = () => {
+  return (
+    <CosmographProvider nodes={nodes} links={links} >
+      <Cosmograph />
+      <CosmographTimeline />
+    </CosmographProvider>
+  )
+}
+Timeline configuration
+Data and configuration
+info
+If you use React, the data will be synced with CosmographProvider and a configuration can be passed as props to the CosmographTimeline component. React will take care of updates when the data or configuration changes.
+
+In JavaScript/TypeScript, the data will be synced with Cosmograph data and you can pass the configuration to the CosmographTimeline instance using the setConfig methods, or while creating a new instance.
+
+React
+<CosmographProvider nodes={nodes} links={links}>
+  <Cosmograph />
+  <CosmographTimeline 
+    accessor={d => d.time} 
+    animationSpeed={20} 
+    showAnimationControls 
+    onAnimationPlay={() => console.log('Animation started')} 
+  />
+</CosmographProvider>
+Filtering data
+Cosomgraph has a built-in crossfilter, and the CosmographTimeline component is built on top of it. The following configuration properties can be used to customize how the timeline filtering works:
+
+accessor is a function that extracts numeric values from the nodes or links data array in Cosmograph. CosmographTimeline will automatically calculate the bins and set up data filtering upon a range selection. Default: (n) => n.date.
+filterType is a parameter that determines whether to use node-based or link-based crossfilter from Cosmograph. Default: 'links'.
+Intervals customization
+Data step
+dataStep generates bars of width of this value mapped in the x-axis units. Overrides barCount if set. For datetime timeline data, it is set in ms. The default is undefined.
+
+Tick step
+tickStep sets the interval between each tick mark on the timeline axis. For datetime timeline data, it's set in ms or in relative units for numeric timeline data. The default is undefined
+
+Ticks formatting
+formatter property is an optional function that can be used to format dates or numbers into a specific string format.
+
+info
+By default, CosmographTimeline will interpretate ticks as dates. Custom formatter may be required for proper display of tick labels if the timeline data is a number array.
+
+Range selection and animation
+Allow selection
+allowSelection determines if the timeline allows users to select a range of dates. The default is true.
+
+Show animation control
+showAnimationControls, when set to true, shows an animation control button that allows users to play or pause animation of selected range of dates. The default is false.
+
+Animation speed
+animationSpeed controls the rate of refresh for selection animation. Set in ms, the default is 50.
+
+Events configuration
+You can use event handlers to manage actions on the CosmographTimeline.
+
+Try selecting a range in the example below:
+
+onSelection?: (selection?: [number, number] | [Date, Date], isManuallySelected?: boolean) => void
+A callback function that gets triggered when a range is selected on the timeline. The function takes two arguments: selection, which represents the selected range, and isManuallySelected, which is a boolean value that indicates whether the selection was made manually using the setSelection method.
+
+onBarHover?: (data: rangeStart: number | Date, rangeEnd: number | Date, count: number) => void
+Callback triggered when a timeline bar is hovered over. Provides BarData for hovered bar: rangeStart, rangeEnd and count of records in this bar.
+
+onAnimationPlay?: (isAnimationRunning: boolean, selection: (number | Date)[] | undefined) => void
+Callback for the animation play that will be executed in playAnimation. Provides isAnimationRunning state and current selection of CosmographTimeline.
+
+onAnimationPause?: (isAnimationRunning: boolean, selection: (number | Date)[] | undefined) => void
+Callback for the animation play that will be executed in pauseAnimation. Provides isAnimationRunning state and current selection of CosmographTimeline.
+
+Appearance
+Padding
+The padding property controls the spacing between the outer edges of the timeline itself but not effects on the animation button. It is set in pixels, with a default configuration of { top: 0, bottom: 0, left: 0, right: 0 }.
+
+Axis and tick height
+The axisTickHeight property adjusts the height of the ticks along the timeline axis. The default setting is 25 pixels.
+
+Selection control customization
+There are multiple properties to customize the data selection control:
+
+selectionRadius: Defines the roundness of the corners for the data selection control. Set in pixels, with a default of 3.
+selectionPadding: Specifies the padding of the data selection control. Set in pixels, the default is 8.
+Bar configuration
+To adjust the bars displayed, you can use these properties:
+
+barCount: Sets the number of bars to be displayed in the timeline. Ignored if dataStep is set. Default is 100.
+barRadius: Controls the corners roundness of each bar on the timeline. Set in pixels, default is 1.
+barPadding: Sets the padding between each bar on the timeline. Expressed as a percent of bar width from 0 (as 0% of the bar width) to 1 (as 100% of the bar width). Default is 0.1.
+barTopMargin: Determines the margin between the top edge of the timeline and the maximum height bar. Set in pixels, default is 3.
+minBarHeight: Defines the height of bars with an empty data on the timeline. Set in pixels, default is 1.
+Controlling the timeline
+CosmographTimeline provides a set of methods that allow you to have control over it. If you use JavaScript, you can simply call those methods on the CosmographTimeline instance. If you use React, you'll need first need to access the CosmographTimeline instance by using the useCallback or useRef hook and then call the methods on it. Here's an example how you can do it:
+
+React
+import React, { useRef } from 'react'
+import { CosmographProvider, Cosmograph, CosmographTimeline } from '@cosmograph/react'
+import { nodes, links } from './path/to/data'
+
+export const Component = (): JSX.Element => {
+  // Create a ref for CosmographTimeline
+  const timelineRef = useRef(null)
+
+  const setBrush = () => timelineRef.current?.setSelectionInPixels([100, 200])
+  
+  return (
+    <CosmographProvider nodes={nodes} links={links}>
+      <Cosmograph />
+      <button onClick={setBrush}>Set brush</button>
+      <CosmographTimeline ref={timelineRef}/>
+    </CosmographProvider>
+  )
+}
+Available methods
+setConfig(config?: CosmographTimelineInputConfig<N, L>): void
+Updates the configuration of the CosmographTimeline based on the provided configuration object. If no object is passed, it resets the current timeline configuration to its default settings.
+
+getCurrentSelection(): [Date, Date] | [number, number] | undefined
+Returns the current timeline selection in the original time data format of X-axis (Date or number). If no selection has been made, it returns undefined.
+
+getCurrentSelectionInPixels(): [number, number] | undefined
+Returns the current timeline selection in pixels. If no selection has been made, it returns undefined.
+
+getBarWidth(): number
+Provides the width of the bars in the CosmographTimeline, which is useful for custom styling or calculations.
+
+getIsAnimationRunning(): boolean
+Checks if the animation is currently active on the CosmographTimeline and returns a boolean value accordingly.
+
+setSelection(selectionRange?: [Date, Date] | [number, number]): void
+Sets the selection on the CosmographTimeline using the provided selection range. The selection range can be either a range of dates or numbers, given that the timeline data is numeric and the selection range is valid.
+
+setSelectionInPixels(coordinates?: [number, number]): void
+Sets the selection on the timeline using pixel values. It requires an array of two numbers representing the start and end pixel values of the selection. If the provided pixel coordinates are not within the valid range of the timeline or if they are inverted, they won't be set. If no coordinates are passed, the active selection will be reset.
+
+playAnimation(): void
+Initiates the animation on the CosmographTimeline if an interval is selected. The selected interval is moved forward by each timeline bar according to the speed specified in the animationSpeed of the current configuration.
+
+pauseAnimation(): void
+Pauses the active animation on the CosmographTimeline.
+
+stopAnimation(): void
+Stops the active animation on the CosmographTimeline and resets the selection.
+
+getConfig(): CosmographTimelineConfigInterface<N, L>
+Returns the current configuration of the CosmographTimeline.
+
+remove(): void
+Removes the CosmographTimeline. This is useful when you no longer need the timeline and want to free up resources.
+
+CSS styling
+In React, you can pass style object or className string as props for CosmographTimeline to apply your own style.
+
+React
+<CosmographTimeline
+  className='timeline'
+  style={{ height: '80px' }}
+  ...
+/>
+CSS variables
+You can use them in custom style to change appearance of timeline elements.
+
+Name	Default Value	Description
+--cosmograph-timeline-axis-color	white	Color of the axis in the timeline.
+--cosmograph-timeline-selection-color	rgb(119, 119, 119)	Color of the selection control.
+--cosmograph-timeline-selection-opacity	0.5	Opacity of the selection control.
+--cosmograph-timeline-bar-color	#7a7a7a	Color of the bars in the timeline.
+--cosmograph-timeline-text-color	white	Color of the axis labels.
+--cosmograph-timeline-font-family	inherit	Font family of the axis labels.
+--cosmograph-timeline-font-size	11px	Font size of the axis labels.
+--cosmograph-timeline-background	#222222	Background color of the timeline container.

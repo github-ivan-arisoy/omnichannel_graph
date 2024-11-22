@@ -1,0 +1,221 @@
+Search
+CosmographSearch is a powerful search engine designed for Cosmograph that offers more than just basic search functionality. It allows users to search across multiple fields and select specific accessors to narrow down their search. Beyond searching and managing results, CosmographSearch helps navigate through the Cosmograph by zooming in on results and highlighting relevant parts of interest.
+
+Search...
+ 
+id
+Creating a search instance
+info
+Note that in order to use the CosmographSearch component in React, you will need to have a higher-order CosmographProvider in your component tree, and Cosmograph component initialized. CosmographProvider is responsible for providing data into all Cosmograph React Components and interaction with Cosmograph instance.
+
+React
+Data
+import { CosmographProvider, Cosmograph, CosmographSearch } from '@cosmograph/react'
+import { nodes, links } from './path/to/data'
+
+export const Component = () => {
+  return (
+    <CosmographProvider nodes={nodes} links={links} >
+      <Cosmograph />
+      <CosmographSearch />
+    </CosmographProvider>
+  )
+}
+Data and configuration
+info
+If you use React, the data will be synced with CosmographProvider and a configuration can be passed as props to the CosmographSearch component. React will take care of updates when the data or configuration changes.
+
+In vanilla JavaScript or TypeScript, the data will be synced with Cosmograph you can pass the configuration to the CosmographSearch instance using the setConfig methods, or while creating a new instance.
+
+React
+Data
+<CosmographProvider nodes={nodes} links={links}>
+  <Cosmograph />
+  <CosmographSearch 
+    accessors={[
+      { label: 'name', accessor: (node) => node.name },
+      { label: 'email', accessor: (node) => node.email }
+     ]} 
+    maxVisibleItems={5} 
+    onSelect={(node) => console.log(`Selected node: ${node.id}`)} 
+  />
+</CosmographProvider>
+Configuration overview
+Accessors
+Share
+
+The accessors property allows you to configure how the search input is matched against the node data. It takes an array of AccessorOption objects, each with a string label and an accessor function:
+
+accessors: [
+  {
+    label: 'name',
+    accessor: (node) => node.name 
+  },
+  {
+    label: 'value',
+    accessor: (node) => node.value
+  }
+]
+If accessors are not specified, CosmographSearch will automatically generate accessors using the properties from records you've passed into Cosmograph, where label and accessor will be the property name.
+
+You can customize accessor function as you wish, but it should return a string as this result will be matched against the search input.
+
+info
+By default, CosmographSearch uses the first accessor in the array to match against the search input (if activeAccessorIndex is not specified).
+
+Switching accessors
+By default, the activeAccessorIndex in the CosmographSearch component is undefined and is controlled internally. If you need to have control over the active accessor from your component's state, you can pass the activeAccessorIndex as a prop to the CosmographSearch component.
+
+The activeAccessorIndex property in the CosmographSearch configuration allows you to determine which accessor function is currently active for searching. It represents the index of the accessor in the accessors array that should be used. This feature enables you to programmatically manage or synchronize the selected accessor between the CosmographSearch component and your component's state.
+
+To achieve this, you can handle the onAccessorSelect event and update the activeAccessorIndex in your component's state accordingly:
+
+React
+const [activeIndex, setActiveIndex] = useState(0)
+
+const handleSelectAccessor = accessor => {
+  setActiveIndex(accessors.indexOf(accessor))
+}
+
+<CosmographSearch
+  activeAccessorIndex={activeIndex}
+  accessors={accessors}
+  onAccessorSelect={handleSelectAccessor}
+/>
+Results list tweaking
+Limit suggestions count
+limitSuggestions sets the maximum number of suggestions to be shown in the dropdown list. When the number of suggestions surpasses limitSuggestions, additional suggestions will be hidden. This can help to performance as there will be less results for CosmographSearch to render. If the value is undefined, there will be no limit on suggestions. Default: 50.
+
+Displayed items
+maxVisibleItems is a count that sets the maximum number of items which can be visible in the dropdown list at once. When the number of suggestions exceeds maxVisibleItems, a scrollbar will be added to the dropdown list. Default: 10.
+
+Ordering
+The ordering property is an object that specifies the order and inclusion of properties in the search results. It has two optional properties:
+
+order : An array of strings defining the order of the properties in the search results. The strings should correspond to the properties of the search data or labels from the accessors object. Properties listed in order will be prioritezed in the search results. If not provided, the original order of the properties in the search data will be used.
+include : An array of strings specifying which accessor labels or properties of the search data should be included in the search results. This helps to filter out the properties to display. If not provided, all properties of the provided data will be included.
+Example configurations:
+
+const exampleData = [
+  { name: 'John', age: 25, gender: 'Male', city: 'New York' },
+  { name: 'Alice', age: 30, gender: 'Female', city: 'Los Angeles' },
+  { name: 'Bob', age: 35, gender: 'Male', city: 'Chicago' }
+];
+
+// Will display only the name and age properties in their original order: name, age
+const orderingConfigFilter = {
+  order: undefined,
+  include: ['age', 'name']
+};
+
+// Will display only the name and city properties in order: city, name
+const orderingConfigChangingOrder = {
+  order: ['city', 'name'],
+  include: ['name', 'city']
+};
+
+// Will all properties of the data object in this order: city, name, age, gender
+const orderingConfigPrioritize = {
+  order: ['city'],
+  include: undefined,
+};
+ordering is undefined by default. If ordering is not provided, all properties of the given data object will be displayed in their original order.
+
+Minimum match length
+minMatch property determines the minimum number of characters required to match a suggestion. If the input text is fewer than the value of minMatch, no suggestions will be prompted. Default: 1.
+
+Truncate Values
+truncateValues specifies the maximum number of characters to be shown for each property of the data object. When the number of characters exceeds truncateValues, the rest of the characters will be hidden. If the value is undefined, the full values will be shown. Default: 100.
+
+Appearance
+Dropdown list position
+openListUpwards property is a boolean that determines whether to open the dropdown list above or below the input field. If set to true, it will open the dropdown list above the input field. If set to false, the dropdown list will open below the input field. Default: false.
+
+Placeholder configuration
+placeholder is a string that specifies the placeholder text to be displayed in the search input field. Default: Search....
+
+Match Palette
+The matchPalette is an array of colors used to visually differentiate search results with multiple properties. The colors should be specified in a format that is recognized by CSS. Default: ['#fbb4ae80', '#b3cde380', '#ccebc580', '#decbe480', '#fed9a680', '#ffffcc80', '#e5d8bd80', '#fddaec80'].
+
+info
+The first property of the result that matches the selected accessor will always be colored using the CSS variable --cosmograph-search-text-color. The remaining properties will then be colored using the matchPalette colors.
+
+Disabled state
+isDisabled property is a boolean that decides whether the CosmographSearch component is active or inactive. The default value is false.
+
+Events configuration
+CosmographSearch has a set of handlers to respond to various interactions with it.
+
+onSelectResult(node: N)
+Callback function that gets triggered when an item from the suggestions list is selected. It provides the selected node as an argument.
+
+onSearch(nodes?: N[])
+Triggered when the user inputs a search term. It provides an array of nodes that match the current search term in the node's property which is defined by the accessor.
+
+onEnter(input: string, accessor?: { label: string; accessor: (d: N) => string })
+Called when the user hits the Enter key in the search input. It provides the current input text content of the search input field and the current accessor as arguments.
+
+onAccessorSelect(accessor: { label: string; accessor: (d: N) => string }, index: number)
+Callback that will be called when the user selects an accessor from the dropdown list. It provides the selected accessor as an argument and its index.
+
+Try to select a result from CosmographSearch dropdown list in the example below:
+
+Search...
+ 
+id
+Controlling the component
+CosmographSearch provides a set of methods that allow you to have control over it. If you use JavaScript, you can simply call those methods on the CosmographSearch instance. If you use React, you'll need first need to access the CosmographSearch instance by using the useCallback or useRef hook and then call the methods on it. Here's an example how you can do it:
+
+React
+import React, { useRef } from 'react'
+import { CosmographProvider, Cosmograph, CosmographSearch } from '@cosmograph/react'
+import { nodes, links } from './path/to/data'
+
+export const Component = (): JSX.Element => {
+  // Create a ref for CosmographSearch
+  const searchRef = useRef(null)
+
+  const clearInput = () => searchRef.current?.clearInput()
+  
+  return (
+    <CosmographProvider nodes={nodes} links={links}>
+      <Cosmograph />
+      <button onClick={clearInput}>Clear search input</button>
+      <CosmographSearch ref={searchRef}/>
+    </CosmographProvider>
+  )
+}
+Available methods
+setConfig(config | undefined)
+Updates the configuration of the CosmographSearch based on the provided configuration object. If no object is passed, it resets the current search configuration to its default settings.
+
+getConfig()
+Returns the current CosmographSearch configuration object.
+
+remove()
+Removes the search input element and destroys the CosmographSearch instance.
+
+clearInput()
+Clears the input of the search box.
+
+CSS styling
+In React, you can pass style object or className string as props for CosmographSearch to apply your own style.
+
+React
+<CosmographSearch
+  className='search'
+  style={{ margin: '0 1rem' }}
+  ...
+/>
+CSS variables
+You can use them in custom styles to change the colors of search elements.
+
+Name	Default Value	Description
+--cosmograph-search-text-color	white	Color of the search text.
+--cosmograph-search-list-background	#222222	Background color of the search list.
+--cosmograph-search-font-family	inherit	Font of the search element.
+--cosmograph-search-input-background	#222222	Background color of the search input box.
+--cosmograph-search-mark-background	rgba(255,255,255,0.2)	Background color of the highlighted search matches.
+--cosmograph-search-accessor-background	rgba(255,255,255,0.2)	Background color of the accessor selection button.
+--cosmograph-search-interactive-background	rgba(255,255,255,0.4)	Background color of the interactive elements in the dropdown.
+--cosmograph-search-hover-color	rgba(255,255,255,0.05)	Color of the hover effect for interactive elements.

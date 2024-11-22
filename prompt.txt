@@ -1,0 +1,180 @@
+I'll provide a comprehensive overview of the project:
+1. Project Overview:
+
+
+// This is a React-based graph visualization project that analyzes user-household-VID relationships
+- User is a User: LiverampID
+- Household is a Household id
+- VID is a cookie associated sometimes to a user if it doesnt have a connection to user it is directly seen as cookie in a household
+// Main components:
+- Main Graph Visualization (using Cosmograph)
+- Age Distribution Analysis (using D3)
+- Device/Browser Analysis (planned)
+- Context Analysis (planned)
+
+1. Data Structure:
+We have 2 csv file types to create a housheold:
+- metadata file - contains all the information about the the nodes(ids and their type)
+- edges file  - contains the edges between the nodes
+
+info about the nodes:
+export interface Node {
+  id: string;
+  env: string;
+  ip_hash: string;
+  browsers: string;
+  node_type: string;
+  cities: string;
+  standardised_name: string;
+  nb_of_households: number;
+  nb_of_users: number;
+  nb_of_vids: number;
+  vid_nb_of_users: number;
+  vid_nb_of_households: number;
+  user_nb_of_vids: number;
+  user_nb_of_households: number;
+  household_nb_of_vids: number;
+  household_nb_of_users: number;
+  domain: string;
+  context_name: string;
+  age_predictions: string;
+  ts: string;
+
+  size?: number;
+  color?: string;
+  inLinksCount?: number;
+  outLinksCount?: number;
+}
+
+export interface Link {
+  source: string;
+  target: string;
+  time: string;
+  relationship: string;
+  width?: number;
+  color?: string;
+}
+
+1. Current Features:
+a) Main Graph:
+typescript
+
+// - Interactive network visualization showing:
+//   - Households (red)
+//   - Users (purple)
+//   - VIDs (blue)
+// - Node size based on connections
+// - Interactive selection and zooming
+// - Timeline filtering
+b) Analysis Page:
+typescript
+
+// When selecting households:
+- Shows filtered graph of selected households and connected nodes
+- Age distribution visualization for connected users
+- Selection mechanism for comparing multiple user distributions
+1. What We've Done So Far:
+typescript
+
+// 1. Basic Graph Setup
+- Implemented Cosmograph visualization
+- Added node type coloring
+- Added interactive selection
+
+// 2. Analysis Features
+- Created household selection mechanism
+- Implemented age distribution visualization
+- Added multi-user distribution comparison
+
+// 3. Data Processing
+- CSV parsing for nodes and links
+- Age predictions parsing
+- Timeline data handling
+1. Planned Features:
+a) Device Distribution:
+typescript
+
+// Plan to add:
+interface DeviceAnalysis {
+  browsers: Map<string, number>;
+  deviceTypes: Map<string, number>;
+  // Visualization component for device types
+  // Filtering by device type
+}
+b) Context Analysis:
+typescript
+
+// For VIDs in households:
+interface ContextAnalysis {
+  domains: string[];
+  categories: string[];  // from context_name
+  timeDistribution: Map<string, number>;
+}
+
+// Planned visualization:
+- Time-based or VID-based analysis
+1. Implementation Road Map:
+typescript
+
+// 1. Complete Age Distribution
+- Add average line for selected distributions
+- Add percentile visualization
+- Add distribution comparison metrics
+
+// 2. Add Device Analysis
+- Create DeviceDistribution component
+- Add device filtering
+- Implement device type grouping
+
+// 3. Add Context Analysis
+- Parse context_name into structured categories
+- Create hierarchical visualization
+- Add domain analysis
+- Implement time-based context analysis
+1. Component Structure:
+typescript
+
+// Current:
+App
+├── MainPage
+│   ├── CosmographProvider
+│   │   ├── Cosmograph
+│   │   ├── Timeline
+│   │   └── Search
+│   └── Selection Controls
+└── AnalysisPage
+    ├── Graph Section
+    │   └── Filtered Cosmograph
+    └── Analysis Section
+        └── AgeDistribution
+
+// Planned additions:
+AnalysisPage
+└── Analysis Section
+    ├── DeviceDistribution
+    │   ├── Browser Analysis
+    │   └── Device Type Analysis
+    └── ContextAnalysis
+        └── Temporal Analysis
+1. CSS Structure:
+css
+
+/* Current structure */
+.app-container
+.nav-container
+.content-container
+.graph-container
+.analysis-section
+
+/* Planned additions */
+.device-analysis
+.context-analysis
+.temporal-view
+1. Development Next Steps:
+2. Complete the age distribution visualization
+3. Add device type distribution
+4. Implement context analysis
+5. Add temporal analysis
+6. Create comparison views
+7. Add export functionality
+Would you like me to elaborate on any of these aspects or provide more detailed code examples for the planned features?

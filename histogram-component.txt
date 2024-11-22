@@ -1,0 +1,177 @@
+Histogram
+The CosmographHistogram provides a customizable histogram visualization component.
+
+Histogram of node size chart in pixels
+Creating a histogram instance
+info
+Note that in order to use the CosmographHistogram component in React, you will need to have a higher-order CosmographProvider in your component tree, and Cosmograph component initialized. CosmographProvider is responsible for providing data into all Cosmograph React Components and interaction with Cosmograph instance.
+
+React
+Data
+import { CosmographProvider, Cosmograph, CosmographHistogram } from '@cosmograph/react'
+import { nodes, links } from './path/to/data'
+
+export const Component = () => {
+  return (
+    <CosmographProvider nodes={nodes} links={links} >
+      <Cosmograph />
+      <CosmographHistogram />
+    </CosmographProvider>
+  )
+}
+Histogram configuration
+Data and configuration
+info
+If you use React, the data will be synced with CosmographProvider and a configuration can be passed as props to the CosmographHistogram component. React will take care of updates when the data or configuration changes.
+
+If you use JavaScript or TypeScript, the data will be synced with Cosmograph data and you can pass the configuration to the CosmographHistogram instance using the setConfig methods, or while creating a new instance.
+
+Work with data
+Accessor
+accessor is a function that extracts numeric values from the nodes or links data array in Cosmograph. Histogram will automatically calculate the bins and set up data filtering upon a range selection. Default: (n) => n.value.
+
+Custom data
+The data parameter allows you to provide your own array of data to create a histogram. If you don't specify a data array, the histogram will be built using the nodes or links data from Cosmograph. The default value is undefined.
+
+Data filtering
+Cosomgraph has a built-in crossfilter, and the CosmographHistogram component is built on top of it. The following configuration properties can be used to customize how the histogram filtering works:
+
+Custom filtering function
+filterFunction is a function that should return an array of nodes or links to be highlighted. It receives the selected range, full data, and filtered data (by other filters if there're any) as arguments. The default is undefined
+
+Filter type
+filterType is a parameter that determines whether to use node-based or link-based crossfilter from Cosmograph. Default: 'nodes'.
+
+Exmaple of advanced data configuration
+React
+<CosmographProvider nodes={nodes} links={links}>
+  <Cosmograph />
+  <CosmographHistogram 
+    accessor={d => d} 
+    data={[1, 10, 15]}
+    filterFunction={(selection, data, crossfilteredData) => {
+      return crossfilteredData.filter(node => {
+        return node.size >= selection[0] && node.size <= selection[1]
+      })
+    }}
+  />
+</CosmographProvider>
+Highlighting cross-filtered data
+Cross-filtering updates the histogram with a second layer of bars that highlights the filtered data in real-time.
+
+Turn off highlighted layer
+highlightCrossfiltered option allows to turn off displaying the second layer with highlighted bars. Default: true.
+
+Bar control configuration
+Custom extent
+customExtent sets the minimum and maximum extent for the CosmographHistogram. It can be used if you don't want histogram range to be automatically calculated from data extent. The default is undefined.
+
+Ticks formatting
+formatter property is an optional function for formatting the axis tick edge labels in the CosmographHistogram component.
+
+Data step
+dataStep property defines how wide each bar should be in terms of the X-axis units. If undefined, the bar width is calculated based on the total number of bars in the barCount. Default: undefined.
+
+Bar count
+barCount property is a count that sets the number of bars to be displayed in the CosmographHistogram. However, if dataStep is set, barCount will be ignored and the number of bars will be determined based on the dataStep value. The default value for this property is 30.
+
+info
+By default, CosmographHistogram automatically calculates the bar width using a barCount which defaults to 30. This can sometimes cause empty spaces within the histogram, leading to a less aesthetic appearance. To rectify this, consider adjusting the barCount to a different value, or use dataStep to calculate bars based on X-axis units.
+
+Selection settings
+Allow selection
+allowSelection property is a boolean that determines whether the CosmographHistogram component allows users to select bars using a selection control or not. The default value is true.
+
+Sticky selection
+stickySelection property is a boolean that decides whether the selection control coordinates stick to the bar edges in the CosmographHistogram or not. The default value is true.
+
+Events configuration
+You can utilize various event handlers to respond to user interactions with the CosmographHistogram.
+
+onSelection(selection?: [number, number], isManuallySelected?: boolean
+A callback function that gets triggered when a range is selected on the histogram. The function takes two arguments: selection, which represents the selected range, and isManuallySelected, which is a boolean value that indicates whether the selection was made manually using the setSelection method.
+
+onBarHover(data: rangeStart: number, rangeEnd: number, count: number)
+Triggered when a bar in the histogram is hovered over. It provides data for the hovered bar including rangeStart, rangeEnd, and count of records in the hovered bar.
+
+Example of logging current selected range
+Try selecting a range in the example below:
+
+Histogram of node size chart in pixels
+Appearance
+Padding and margin
+padding: This property is an object that specifies the top, bottom, left, and right padding of an element. Each property is defined with a numeric value indicating the size of the padding in pixels. Default: { top: 5, left: 5, bottom: 1, right: 5 }
+labelSideMargin Adjusts the margin between the axis tick edge labels and the sides of the CosmographHistogram component. The default value is 3 pixels.
+Bar properties
+minBarHeight: Dictates the minimum height for each histogram bar. By default, this is set at 2 pixels.
+barRadius: Controls the corner roundness of each bar within the CosmographHistogram. It is measured in pixels and defaults at 1.
+barPadding: Sets the spacing between each bar expressed as a percent of the bar width. Values can range from 0 (no padding) to 1 (padding equal to the bar width). The default is 0.1.
+barTopMargin: This property determines the margin between the top edge of the CosmographHistogram and the bar with maximum height. The default value is 3 pixels.
+Selection properties
+selectionRadius: Determines the smoothness of the corners for the data selection control. The default value for this property is 3 pixels.
+selectionPadding: This property controls the padding for the data selection. It is measured in pixels with a default value of 8.
+Controlling the histogram
+CosmographHistogram provides a set of methods that allow you to have control over it. If you use JavaScript, you can simply call those methods on the CosmographHistogram instance. If you use React, you'll need first need to access the CosmographHistogram instance by using the useCallback or useRef hook and then call the methods on it. Here's an example how you can do it:
+
+React
+import React, { useRef } from 'react'
+import { CosmographProvider, Cosmograph, CosmographHistogram } from '@cosmograph/react'
+import { nodes, links } from './path/to/data'
+
+export const Component = (): JSX.Element => {
+  // Create a ref for CosmographHistogram
+  const histogramRef = useRef(null)
+
+  const setBrush = () => histogramRef.current?.setSelection([1, 5])
+  
+  return (
+    <CosmographProvider nodes={nodes} links={links}>
+      <Cosmograph />
+      <button onClick={setBrush}>Set brush</button>
+      <CosmographHistogram ref={histogramRef}/>
+    </CosmographProvider>
+  )
+}
+Available methods
+setConfig(config | undefined)
+Modifies the configuration of CosmographHistogram according to the provided configuration object. If no object is passed, it restores the current histogram configuration to its default settings.
+
+getCurrentSelection()
+Returns the current histogram selection in the X-axis units. If no selection has been made, it returns undefined.
+
+getCurrentSelectionInPixels()
+Obtains the current histogram selection in pixels.
+
+getBarWidth()
+Returns the current bar width in pixels.
+
+setSelection(selection: [number, number] | undefined)
+Sets the selected range on a CosmographHistogram. Takes a numeric selection range in the X-axis units as a parameter. If nothing passed, resets selection.
+
+getConfig()
+Retrieves the current configuration of a CosmographHistogram.
+
+remove()
+Destroys the CosmographHistogram and removes all the attached events.
+
+CSS styling
+In React, you can pass style object or className string as props for CosmographHistogram to apply your own style.
+
+React
+<CosmographHistogram
+  className='histogram'
+  style={{ height: '100px' }}
+  ...
+/>
+CSS variables
+You can use them in custom style to change the appearance of histogram elements.
+
+Name	Default Value	Description
+--cosmograph-histogram-text-color	white	Color of the text in the histogram.
+--cosmograph-histogram-axis-color	#d7d7d7	Color of the axis in the histogram.
+--cosmograph-histogram-selection-color	rgb(119, 119, 119)	Color of the selection control.
+--cosmograph-histogram-selection-opacity	0.5	Opacity of the selection control.
+--cosmograph-histogram-bar-color	#7a7a7a	Color of the bars in the histogram.
+--cosmograph-histogram-font-family	inherit	Font family of the histogram labels.
+--cosmograph-histogram-font-size	11px	Font size of the histogram labels.
+--cosmograph-histogram-background	#222222	Background color of the histogram container.

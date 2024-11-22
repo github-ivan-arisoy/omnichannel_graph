@@ -399,3 +399,276 @@ body {
   font-size: 12px;
   color: white;
 }
+
+/* Dataset selection menu styles */
+.dataset-menu {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.dataset-button {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.dataset-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.dataset-button.active {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Remove styles for the old select element */
+.dataset-select {
+  display: none;
+}
+
+/* Sidebar Title */
+.sidebar-title {
+  color: white;
+  font-size: 16px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+/* Dataset Menu Styles */
+.dataset-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dataset-button {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: white;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s;
+}
+
+.dataset-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.dataset-button.active {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+
+
+
+.collapsible-header {
+  cursor: pointer;
+  margin-top: 20px;
+  font-size: 1.5em;
+}
+
+
+.selected-households {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 16px;
+  overflow-x: auto;
+  max-width: 400px;
+  padding: 4px;
+}
+
+.selected-household-item {
+  display: flex;
+  align-items: center;
+  background: #1a2942;
+  border: 1px solid #2d4164;
+  border-radius: 16px;
+  padding: 2px 10px;
+  font-size: 12px;
+  color: #fff;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.selected-household-item:hover {
+  background: #2d4164;
+}
+
+.household-label {
+  margin-right: 6px;
+}
+
+.household-remove {
+  font-size: 14px;
+  color: #8395b5;
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+.household-remove:hover {
+  color: #fff;
+}
+
+.nav-tabs {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  overflow-x: auto;
+  padding-right: 16px;
+}
+
+.content-details {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.content-entry {
+  padding: 8px;
+  margin: 4px 0;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.domain {
+  font-weight: bold;
+  color: #4B9BF1;
+}
+
+.context {
+  font-size: 0.9em;
+  color: #F1A74B;
+  margin: 4px 0;
+}
+
+.timestamp {
+  font-size: 0.8em;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+
+
+
+.context-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 16px;
+}
+
+.context-item {
+  background: rgba(75, 155, 241, 0.1);
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  color: #4B9BF1;
+}
+
+
+
+.age-distribution {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.age-distribution h3 {
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.age-distribution svg {
+  width: 100%;
+  height: auto;
+}
+
+
+
+.age-distribution {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.user-selection {
+  margin-bottom: 1rem;
+}
+
+.selected-users {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.user-button {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.user-button.selected {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.selection-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.selection-controls button {
+  padding: 0.25rem 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+}
+
+.selection-controls button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+
+
+.device-distribution {
+  margin-top: 20px;
+}
+
+.device-selection {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.selected-devices {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.device-button {
+  margin: 2px;
+  padding: 5px;
+}
+
+.device-button.selected {
+  background-color: #ddd;
+}
+
+.selection-controls {
+  margin-top: 5px;
+}
