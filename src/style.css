@@ -672,3 +672,42 @@ body {
 .selection-controls {
   margin-top: 5px;
 }
+
+
+
+.analysis-page .nav-container {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.analysis-page .nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.analysis-page .nav-tab {
+  padding: 0.5rem 1rem;
+  color: white;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.analysis-page .nav-tab:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.analysis-page .selected-info {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.analysis-page .analysis-content {
+  padding-top: 1rem;
+}

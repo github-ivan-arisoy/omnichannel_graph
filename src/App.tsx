@@ -16,6 +16,8 @@ import { DatasetInfo } from './types';
 import TeadsLogo from './TeadsLogo';
 import SelectedHouseholds from './SelectedHouseholds';
 import AnalysisPage from './AnalysisPage';
+import { GraphProvider, useGraph } from './GraphContext';
+import { useLocation, useNavigate } from 'react-router-dom';
 import "./style.css";
 
 interface RouterState {
@@ -27,6 +29,19 @@ interface RouterState {
 
 
 function MainPage() {
+  const {
+    datasets,
+    currentDataset,
+    graphData,
+    deviceColors,
+    setDatasets,
+    setCurrentDataset,
+    setGraphData,
+    setDeviceColors
+  } = useGraph();
+
+  const location = useLocation();
+  const navigate = useNavigate();
   
   const cosmographRef = useRef<CosmographRef<Node, Link>>(null);
   const timelineRef = useRef<CosmographTimelineRef<Link>>(null);
@@ -35,16 +50,17 @@ function MainPage() {
   const [selectedHouseholds, setSelectedHouseholds] = useState<Node[]>([]);
 
   // State
-  const [datasets, setDatasets] = useState<Record<string, DatasetInfo>>({});
-  const [currentDataset, setCurrentDataset] = useState<string>('');
-  const [graphData, setGraphData] = useState<{ nodes: Node[]; links: Link[] } | null>(null);
+  // const [datasets, setDatasets] = useState<Record<string, DatasetInfo>>({});
+  //const [currentDataset, setCurrentDataset] = useState<string>('');
+  // const [graphData, setGraphData] = useState<{ nodes: Node[]; links: Link[] } | null>(null);
+  //const [deviceColors, setDeviceColors] = useState<Record<string, string>>({});
+
   const [loading, setLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(true);
   const [currentView, setCurrentView] = useState<'general' | 'info' | 'analysis'>('analysis');
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [isTimelineAnimating, setIsTimelineAnimating] = useState(false);
   const [showLabelsFor, setShowLabelsFor] = useState<Node[] | undefined>(undefined);
-  const [deviceColors, setDeviceColors] = useState<Record<string, string>>({});
   const [isHouseholdsOpen, setIsHouseholdsOpen] = useState(true);
   const [isUsersOpen, setIsUsersOpen] = useState(true);
   const [isVIDsOpen, setIsVIDsOpen] = useState(true);
@@ -61,6 +77,19 @@ function MainPage() {
     };
     loadDatasets();
   }, []);
+
+  useEffect(() => {
+    if (location.state?.returnedFromAnalysis) {
+      const { selectedHouseholds: returnedHouseholds } = location.state;
+      if (returnedHouseholds) {
+        setSelectedHouseholds(returnedHouseholds);
+        // Clear the location state to prevent re-setting on refresh
+        window.history.replaceState({}, document.title);
+      }
+    }
+  }, [location.state]);
+
+
 
   // Load graph data when currentDataset changes
   useEffect(() => {
@@ -87,6 +116,35 @@ function MainPage() {
       loadData();
     }
   }, [currentDataset]);
+
+
+  const handleAnalysisClick = useCallback(() => {
+    if (selectedHouseholds.length > 0) {
+      // Get all related nodes for the selected households
+      const relatedNodes = graphData?.nodes.filter(node => 
+        graphData.links.some(link => 
+          (link.source === node.id && selectedHouseholds.some(h => h.id === link.target)) ||
+          (link.target === node.id && selectedHouseholds.some(h => h.id === link.source))
+        )
+      ) || [];
+  
+      // Get relevant links
+      const relevantLinks = graphData?.links.filter(link =>
+        selectedHouseholds.some(h => h.id === link.source || h.id === link.target) ||
+        relatedNodes.some(n => n.id === link.source || n.id === link.target)
+      ) || [];
+  
+      // Navigate to analysis page with data
+      navigate('/analysis', {
+        state: {
+          selectedHouseholds,
+          relatedNodes,
+          links: relevantLinks,
+          deviceColors
+        }
+      });
+    }
+  }, [selectedHouseholds, graphData, deviceColors, navigate]);
 
   const handlePlayPause = useCallback(() => {
     if (isPlaying) {
@@ -238,10 +296,11 @@ function MainPage() {
             Info
           </button>
           <button
-            className={`nav-tab ${currentView === 'analysis' ? 'active' : ''}`}
-            onClick={() => setCurrentView('analysis')}
-          >
-            Analysis
+              className={`nav-tab ${currentView === 'analysis' ? 'active' : ''}`}
+              onClick={handleAnalysisClick}
+              disabled={selectedHouseholds.length === 0}
+            >
+              Analysis
           </button>
           <SelectedHouseholds
             selectedHouseholds={selectedHouseholds}
@@ -477,11 +536,13 @@ function MainPage() {
 const App = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<MainPage />} />
-        <Route path="/analysis" element={<AnalysisPage />} />
-      </Routes>
-    </BrowserRouter>
+      <GraphProvider>
+        <Routes>
+          <Route path="/" element={<MainPage />} />
+          <Route path="/analysis" element={<AnalysisPage />} />
+        </Routes>
+      </GraphProvider>
+  </BrowserRouter>
   );
 };
 
