@@ -450,6 +450,21 @@ function MainPage() {
           <div className="stats-container">
             <div>{graphData.nodes.length.toLocaleString()} Nodes</div>
             <div>{graphData.links.length.toLocaleString()} Links</div>
+            <div>
+              {graphData.nodes.filter(node => node.node_type === 'Household').length.toLocaleString()} Households
+            </div>
+            <div>
+              {graphData.nodes.filter(node => node.node_type.startsWith('User:')).length.toLocaleString()} Users
+            </div>
+            <div>
+              {graphData.nodes.filter(node => node.node_type.startsWith('User:')).length.toLocaleString()} Users
+            </div>
+            <div>
+              {graphData.nodes.filter(node => node.env == 'web').length.toLocaleString()} env: web
+            </div>
+            <div>
+              {graphData.nodes.filter(node => node.env == 'inapp').length.toLocaleString()} env: inapp
+            </div>
           </div>
         </div>
       </div>
