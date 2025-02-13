@@ -242,6 +242,9 @@ function MainPage() {
   );
 
   const generateColorMapping = (types: string[]) => {
+    const MAX_COLORED_TYPES = 6;
+    const DEFAULT_COLOR = '#666666'; // grey for remaining types
+    
     const predefinedColors: string[] = [
       '#F14B4B', // Red
       '#8A2BE2', // Purple
@@ -249,12 +252,16 @@ function MainPage() {
       '#F1A74B', // Orange
       '#4BF1D2', // Cyan
       '#7CF14B', // Green
-      // Add more colors if needed
     ];
+  
     const colorMapping: Record<string, string> = {};
+    
     types.forEach((type, index) => {
-      colorMapping[type] = predefinedColors[index % predefinedColors.length];
+      colorMapping[type] = index < MAX_COLORED_TYPES 
+        ? predefinedColors[index]
+        : DEFAULT_COLOR;
     });
+  
     return colorMapping;
   };
 
@@ -510,9 +517,6 @@ function MainPage() {
             <div>{graphData.links.length.toLocaleString()} Links</div>
             <div>
               {graphData.nodes.filter(node => node.node_type === 'Household').length.toLocaleString()} Households
-            </div>
-            <div>
-              {graphData.nodes.filter(node => node.node_type.startsWith('User:')).length.toLocaleString()} Users
             </div>
             <div>
               {graphData.nodes.filter(node => node.node_type.startsWith('User:')).length.toLocaleString()} Users
